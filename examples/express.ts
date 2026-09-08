@@ -10,35 +10,38 @@ const papaya = new PapayaClient({
   baseUrl: 'http://localhost:80' // Descomentar para pruebas locales
 });
 
+const AMOUNT_SCALE = 10000.0;
+
 // IMPORTANTE: Papaya envía JSON, pero necesitamos el raw string para validar la firma.
-// Configuramos Express para que provea el body original como Buffer/String en req.body crudo
-// usando express.raw() para la ruta específica del webhook.
-app.post(
-  '/webhook',
-  express.raw({ type: 'application/json' }),
-  async (req: Request, res: Response): Promise<void> => {
-    const signature = req.header('X-Papaya-Signature');
-    const webhookSecret = process.env.PAPAYA_WEBHOOK_SECRET || 'mi_secreto_de_prueba';
+// Usamos express.raw() para que `req.body` sea un Buffer.
+app.post('/webhook', express.raw({ type: 'application/json' }), async (req: Request, res: Response): Promise<void> => {
+  const signature = req.headers['x-papaya-signature'] as string;
 
-    if (!signature) {
-      res.status(400).send('Falta el header X-Papaya-Signature');
-      return;
-    }
+  if (!signature) {
+    res.status(400).send('Missing signature header');
+    return;
+  }
 
-    try {
-      // 1. Validar firma del webhook y parsear evento
-      const event = constructEvent(req.body, signature, webhookSecret);
+  // La llave secreta del comercio que proporciona el dashboard de Papaya
+  const webhookSecret = process.env.PAPAYA_WEBHOOK_SECRET || 'mi_secreto_de_prueba';
 
-      console.log(`Recibido evento seguro para checkout_id: ${event.checkout_id}`);
-      console.log(`Estado: ${event.status}`);
+  try {
+    // 1. Validar el evento criptográficamente
+    const event = constructEvent(req.body, signature, webhookSecret);
+    
+    console.log(`Recibido evento seguro para checkout_id: ${event.checkout_id}`);
+    console.log(`Estado: ${event.status}`);
 
-      if (event.status === 'PAID') {
+    if (event.status === 'PAID') {
         // 2. Obtener los detalles completos del checkout desde la API
         console.log('Consultando API de Papaya para obtener los ítems del checkout...');
         const checkoutInfo = await papaya.checkouts.get(event.checkout_id);
 
         console.log(`Pedido Interno (external_reference): ${checkoutInfo.external_reference}`);
-        console.log(`Ítems pagados:`, checkoutInfo.items);
+        console.log(`Ítems pagados:`);
+        checkoutInfo.items.forEach(item => {
+            console.log(` - ${item.quantity}x ${item.name} (VES: ${item.unit_price_ves_cents / AMOUNT_SCALE} | USDC: ${item.unit_price_usdc_cents / AMOUNT_SCALE})`);
+        });
 
         // 3. Procesar la orden en tu sistema
         // processOrder(checkoutInfo.external_reference, checkoutInfo.items);
