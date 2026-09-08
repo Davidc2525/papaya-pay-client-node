@@ -39,7 +39,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req: Requ
 
         console.log(`Pedido Interno (external_reference): ${checkoutInfo.external_reference}`);
         console.log(`Ítems pagados:`);
-        checkoutInfo.items.forEach(item => {
+        checkoutInfo.items?.forEach(item => {
             console.log(` - ${item.quantity}x ${item.name} (VES: ${item.unit_price_ves_cents / AMOUNT_SCALE} | USDC: ${item.unit_price_usdc_cents / AMOUNT_SCALE})`);
         });
 
