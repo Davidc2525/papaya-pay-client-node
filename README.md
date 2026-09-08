@@ -49,9 +49,10 @@ try {
 
 El ejemplo incluido levanta un servidor Express en el puerto `8181` que tiene implementada la ruta `/webhook` utilizando `express.raw()`. 
 
-1. Ve a la carpeta de Node.js:
+1. Clona el repositorio y ve a la carpeta:
    ```bash
-   cd libs/nodejs
+   git clone https://github.com/Davidc2525/papaya-pay-client-node.git
+   cd papaya-pay-client-node
    ```
 2. Instala las dependencias:
    ```bash
