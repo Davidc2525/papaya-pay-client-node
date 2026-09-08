@@ -1,0 +1,29 @@
+{
+  "name": "papaya-pay-client",
+  "version": "1.0.0",
+  "description": "SDK oficial de Papaya para validación de Webhooks",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "papaya",
+    "webhook",
+    "payment",
+    "signature",
+    "verification"
+  ],
+  "author": "Papaya",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
