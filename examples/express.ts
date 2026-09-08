@@ -7,7 +7,7 @@ const PORT = 8181;
 // Inicializamos el cliente para interactuar con la API de Papaya
 const papaya = new PapayaClient({
   apiKey: process.env.PAPAYA_API_KEY || 'sk_live_mi_api_key',
-  // baseUrl: 'http://localhost:8080' // Descomentar para pruebas locales
+  baseUrl: 'http://localhost:80' // Descomentar para pruebas locales
 });
 
 // IMPORTANTE: Papaya envía JSON, pero necesitamos el raw string para validar la firma.
